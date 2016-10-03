@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <meta name="format-detection" content="telephone=no" />
+    <title>山大服务助手</title>
+    <link rel="stylesheet" href="assets/css/weui.min.css"/>
+    <link rel="stylesheet" href="static/css/app.css"/>
+</head>
+<body>
+<div class="container" id="container">
+    <div class="tabbar">
+        <div class="weui_tab">
+            <div class="weui_tab_bd">
+                <div class="hd">
+                    <h1 class="page_title">成绩单</h1>
+                    <p class="page_desc">为山大师生服务.</p>
+                </div>
+                <div class="weui_cell">
+                    <div class="weui_cell_bd weui_cell_primary">
+                        <p>姓名</p>
+                    </div>
+                    <div id="stuname" class="weui_cell_ft"></div>
+                </div>
+                <div class="weui_cell">
+                    <div class="weui_cell_bd weui_cell_primary">
+                        <p>学号</p>
+                    </div>
+                    <div id="stuid" class="weui_cell_ft"></div>
+                </div>
+                <div class="weui_cell">
+                    <div class="weui_cell_bd weui_cell_primary">
+                        <p>专业</p>
+                    </div>
+                    <div id="stumajor" class="weui_cell_ft"></div>
+                </div>
+                <div class="weui_cell">
+                    <div class="weui_cell_bd weui_cell_primary">
+                        <p>成绩绩点</p>
+                    </div>
+                    <div id="stupoint" class="weui_cell_ft"></div>
+                </div>
+                <img id="myscore_semester_1" src="" width="100%">
+                <img id="myscore_semester_2" src="" width="100%">
+            </div>
+            <div class="weui_tabbar">
+                <a href="/?openid={{current_user.openid}}" class="weui_tabbar_item weui_bar_item_on">
+                <div class="weui_tabbar_icon">
+                    <img src="/static/images/icon_nav_button.png" alt="">
+                </div>
+                <p class="weui_tabbar_label">主页</p>
+                </a>
+                {% if current_user %}
+                    {% if current_user.type == 1 %}
+                    <a href="/myscore?openid={{current_user.openid}}"  class="weui_tabbar_item">
+                    {% else %}
+                    <a href="/myscore_old?openid={{current_user.openid}}" class="weui_tabbar_item">
+                    {% end %}
+                 {% else %}
+                    <a href="#" class="weui_tabbar_item">
+                 {% end %}
+                <div class="weui_tabbar_icon">
+                    <img src="/static/images/icon_nav_msg.png" alt="">
+                </div>
+                <p class="weui_tabbar_label">成绩</p>
+                </a>
+                <a href="javascript:;" class="weui_tabbar_item">
+                <div class="weui_tabbar_icon">
+                    <img src="/static/images/icon_nav_article.png" alt="">
+                </div>
+                <p class="weui_tabbar_label">暂定</p>
+                </a>
+                <a href="javascript:;" class="weui_tabbar_item">
+                <div class="weui_tabbar_icon">
+                    <img src="/static/images/icon_nav_cell.png" alt="">
+                </div>
+                <p class="weui_tabbar_label">暂定</p>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="captcha_dialog" class="weui_dialog_alert">
+    <div class="weui_mask"></div>
+    <div class="weui_dialog">
+        <div class="weui_dialog_hd">
+            <strong class="weui_dialog_title">请输入验证码</strong>
+        </div>
+        <div class="weui_dialog_bd">
+                <div class="weui_cell weui_vcode">
+                    <div class="weui_cell_bd weui_cell_primary">
+                        <input id="captcha" class="weui_input" placeholder="请输入验证码"/>
+                    </div>
+                    <div class="weui_cell_ft">
+                        <img id="captcha-img" src="/utils/kingocaptcha"
+                        width:"100%"/>
+                    </div>
+                </div>
+                <div class="weui_dialog_ft">
+                    <!-- <input class="weui_btn weui_btn_primary" type="submit" value="提交" /> -->
+                    <a href="javascript:;" class="weui_btn_dialog primary"
+                        type="submit">确定</a>
+                </div>
+        </div>
+    </div>
+</div>
+
+<div id="loadingToast" class="weui_loading_toast" style="display:none;">
+    <div class="weui_mask_transparent"></div>
+    <div class="weui_toast">
+        <div class="weui_loading">
+            <!-- :) -->
+            <div class="weui_loading_leaf weui_loading_leaf_0"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_1"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_2"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_3"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_4"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_5"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_6"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_7"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_8"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_9"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_10"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_11"></div>
+        </div>
+        <p class="weui_toast_content">正在获取中</p>
+    </div>
+</div>
+<script src="assets/js/jquery.min.js"></script>
+<script>
+$('#container').on('click', '.weui_tabbar_item', function () {
+    $(this).addClass('weui_bar_item_on').siblings('.weui_bar_item_on').removeClass('weui_bar_item_on');
+});
+
+$('#captcha-img').on('click', function(){
+    $("#captcha-img").attr('src','/utils/kingocaptcha?x=' +
+                           String(getRandomInt(0,100)));
+})
+
+$("a[type=submit]").on('click', function (e) {
+    $('#captcha_dialog').hide();
+    $("#loadingToast").show();
+    var captcha = $("#captcha").val();
+    $.ajax({
+        type: "post",
+        dataType: "json",
+        url: "",
+        data: {
+            captcha: captcha
+        },
+        success: function(data, text) {
+            $("#loadingToast").hide();
+            if(data.errorcode == 0){
+                $('#captcha_dialog').hide();
+                $('#myscore_semester_1').attr('src',data.data.score_base64_img_semester_1);
+                $('#myscore_semester_2').attr('src',data.data.score_base64_img_semester_2);
+                $('#stuname').html(data.data.stuname);
+                $('#stuid').html(data.data.stuid);
+                $('#stupoint').html(data.data.stupoint);
+                $('#stumajor').html(data.data.stumajor);
+            }
+            else{
+                alert(data.data);
+                $('#captcha-img').click()
+            }
+        }
+    })
+    e.preventDefault();
+    return false;
+});
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <title>山大服务助手</title>
+    <!-- <link rel="stylesheet" href="assets/css/bootstrap.min.css"/> -->
+    <link rel="stylesheet" href="/assets/css/weui.min.css"/>
+    <link rel="stylesheet" href="/static/css/app.css"/>
+    <style>
+    </style>
+</head>
+<body>
+<div class="hd">
+    {% if current_user %}
+    <h1 class="page_title">重新绑定教务</h1>
+    {% else %}
+    <h1 class="page_title">绑定教务</h1>
+    {% end %}
+    <p class="page_desc">为山大师生服务.</p>
+</div>
+    <form class="weui_cells weui_cells_form">
+        <div class="weui_cell">
+            <div class="weui_cell_hd"><label class="weui_label">学号</label></div>
+            <div class="weui_cell_bd weui_cell_primary">
+                <input id="stuid" class="weui_input" placeholder="请输入学号"/>
+            </div>
+        </div>
+        <div class="weui_cell">
+            <div class="weui_cell_hd"><label class="weui_label">教务密码</label></div>
+            <div class="weui_cell_bd weui_cell_primary">
+                <input id="passwd" class="weui_input" placeholder="请输入新教务密码"/>
+            </div>
+        </div>
+        <div class="weui_cell weui_cell_switch">
+            <div class="weui_cell_hd weui_cell_primary">我是2013或2014届</div>
+            <div class="weui_cell_ft">
+                <input id="stutype" class="weui_switch" type="checkbox"/>
+            </div>
+        </div>
+        <div class="weui_cell weui_vcode">
+            <div class="weui_cell_bd weui_cell_primary">
+                <input id="captcha" class="weui_input" placeholder="请输入验证码"/>
+            </div>
+            <div class="weui_cell_ft">
+                <img id="captcha-img" src="{{captcha}}" />
+            </div>
+        </div>
+
+        <div class="weui_btn_area">
+            <input class="weui_btn weui_btn_primary" type="submit" value="绑定" />
+        </div>
+    </form>
+    <div id="loadingToast" class="weui_loading_toast" style="display:none;">
+        <div class="weui_mask_transparent"></div>
+        <div class="weui_toast">
+            <div class="weui_loading">
+                <!-- :) -->
+                <div class="weui_loading_leaf weui_loading_leaf_0"></div>
+                <div class="weui_loading_leaf weui_loading_leaf_1"></div>
+                <div class="weui_loading_leaf weui_loading_leaf_2"></div>
+                <div class="weui_loading_leaf weui_loading_leaf_3"></div>
+                <div class="weui_loading_leaf weui_loading_leaf_4"></div>
+                <div class="weui_loading_leaf weui_loading_leaf_5"></div>
+                <div class="weui_loading_leaf weui_loading_leaf_6"></div>
+                <div class="weui_loading_leaf weui_loading_leaf_7"></div>
+                <div class="weui_loading_leaf weui_loading_leaf_8"></div>
+                <div class="weui_loading_leaf weui_loading_leaf_9"></div>
+                <div class="weui_loading_leaf weui_loading_leaf_10"></div>
+                <div class="weui_loading_leaf weui_loading_leaf_11"></div>
+            </div>
+            <p class="weui_toast_content">正在处理中</p>
+        </div>
+    </div>
+    <div id="alertTips" class="weui_dialog_alert" style="display:none;">
+        <div class="weui_mask"></div>
+        <div class="weui_dialog">
+            <div class="weui_dialog_hd">
+              <strong class="weui_dialog_title">注意!</strong>
+            </div>
+            <div class="weui_dialog_bd">
+                <div class="weui_cells_tips">
+                    <p>请先确定自己是2014之后的同学使(2015+)用的是青果教务，需要使用<code>青果教务系统密码(新教务系统密码)</code></p><p>如果是<code>2013、2014</code>级同学采用信息门户的密码，请输入<code>信息门户密码</code>即可。</p>
+                </div>
+          </div>
+            <div class="weui_dialog_ft">
+                <a href="javascript:closealertTips();" class="weui_btn_dialog primary">确定</a>
+            </div>
+        </div>
+    </div>
+    <script src="/assets/js/jquery.min.js"></script> 
+    <script>
+        $("form").on("submit", function (e) {
+            $("#loadingToast").show();
+            var stuid = $("#stuid").val();
+            var passwd = $("#passwd").val();
+            var captcha = $("#captcha").val();
+            var stutype = 1;
+            if($("#stutype")[0].checked)
+                stutype = 0;
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "",
+                data: {
+                    stuid: stuid,
+                    passwd: passwd,
+                    stutype: stutype,
+                    captcha: captcha
+                },
+                success: function(data, text) {
+                    $("#loadingToast").hide();
+                    if(data.errorcode == 0){
+                        window.location.href="/static/bind-success.html";
+                    }
+                    else{
+                        alert(data.data);
+                        window.location.reload();
+                    }
+                }
+            })
+            e.preventDefault();
+            return false;
+        });
+
+        // switch相关操作
+        $('#stutype').on("click", function (e){
+            $("#alertTips").show();
+            if(e.target.checked == false) {
+                $(".weui_vcode").show()
+                $('#passwd').attr("placeholder","请输入新教务系统密码");
+            }
+            else if(e.target.checked == true) {
+                $(".weui_vcode").hide()
+                $('#passwd').attr("placeholder","请输入信息门户密码");
+            }
+        });
+
+        function closealertTips() {
+            $("#alertTips").hide();
+        }
+
+    </script>
+</body>
+</html>
